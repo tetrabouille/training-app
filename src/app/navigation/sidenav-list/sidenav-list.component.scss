@@ -1,0 +1,11 @@
+mat-nav-list {
+  a {
+    &:hover,
+    &:active {
+      color: gray;
+    }
+    .nav-label {
+      margin-left: 15px;
+    }
+  }
+}

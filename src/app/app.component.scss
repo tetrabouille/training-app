@@ -2,21 +2,5 @@ mat-sidenav-container {
   height: 100%;
   mat-sidenav {
     width: 250px;
-    .nav-label {
-      margin-left: 15px;
-    }
-  }
-  mat-toolbar {
-    a {
-      text-decoration: none;
-      color: white;
-      &:hover,
-      &:active {
-        color: lightgray;
-      }
-    }
-    .navigation-list {
-      list-style: none;
-    }
   }
 }
