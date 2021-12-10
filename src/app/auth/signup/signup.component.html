@@ -1,10 +1,77 @@
 <section>
-  <form action="">
+  <form
+    action="#"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    fxLayoutGap="5px"
+    #f="ngForm"
+    (ngSubmit)="onSubmit(f)"
+    autocomplete="off"
+  >
     <mat-form-field>
-      <input type="email" matInput placeholder="Your email" />
+      <input
+        type="email"
+        matInput
+        placeholder="Your email"
+        ngModel
+        name="email"
+        email
+        required
+        #emailInput="ngModel"
+      />
+      <mat-error *ngIf="emailInput.errors?.required">
+        Email is required
+      </mat-error>
+      <mat-error *ngIf="emailInput.errors?.email">
+        Format is invalid
+      </mat-error>
     </mat-form-field>
     <mat-form-field>
-      <input type="password" matInput placeholder="Your password" />
+      <input
+        type="password"
+        matInput
+        placeholder="Your password"
+        ngModel
+        name="password"
+        required
+        minlength="6"
+        #passwordInput="ngModel"
+      />
+      <mat-hint> Must be 6 characters long </mat-hint>
+      <mat-hint *ngIf="passwordInput.value?.length <= 6" align="end">
+        {{ passwordInput.value?.length }} / 6
+      </mat-hint>
+      <mat-error *ngIf="passwordInput.errors?.required">
+        Password is required
+      </mat-error>
+      <mat-error *ngIf="passwordInput.errors?.minlength">
+        Not enough characters, 6 are required
+      </mat-error>
     </mat-form-field>
+    <mat-form-field>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        ngModel
+        name="birthday"
+        date
+        required
+        [max]="maxDate"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error> Please enter a date </mat-error>
+    </mat-form-field>
+    <mat-checkbox ngModel name="agree" required color="primary">
+      Accept terms of agreement pleaase
+    </mat-checkbox>
+    <button
+      type="submit"
+      mat-raised-button
+      color="primary"
+      [disabled]="!!f.invalid"
+    >
+      Submit
+    </button>
   </form>
 </section>
