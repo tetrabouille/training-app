@@ -1,6 +1,23 @@
 <mat-sidenav-container>
   <mat-sidenav #sidenav role="navigation">
-    <p>I'm the sidenav !</p>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/signup" (click)="sidenav.close()">
+        <mat-icon>person_add</mat-icon>
+        <span class="nav-label">Sign Up</span>
+      </a>
+      <a mat-list-item routerLink="/login" (click)="sidenav.close()">
+        <mat-icon>login</mat-icon>
+        <span class="nav-label">Login</span>
+      </a>
+      <a mat-list-item routerLink="/training" (click)="sidenav.close()">
+        <mat-icon>fitness_center</mat-icon>
+        <span class="nav-label">Training</span>
+      </a>
+      <a mat-list-item (click)="sidenav.close()">
+        <mat-icon>logout</mat-icon>
+        <span class="nav-label">Logout</span>
+      </a>
+    </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary">
@@ -9,12 +26,12 @@
           <mat-icon>menu</mat-icon>
         </button>
       </div>
-      <div><a href="/">LOGO</a></div>
+      <div><a routerLink="/">LOGO</a></div>
       <div fxLayout fxFlex fxLayoutAlign="end" fxHide.xs>
         <ul fxLayout fxLayoutGap="10px" class="navigation-list">
-          <li><a href="/signup">Sign Up</a></li>
-          <li><a href="/login">Login</a></li>
-          <li><a href="/training">Training</a></li>
+          <li><a routerLink="/signup">Sign Up</a></li>
+          <li><a routerLink="/login">Login</a></li>
+          <li><a routerLink="/training">Training</a></li>
         </ul>
       </div>
     </mat-toolbar>

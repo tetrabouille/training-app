@@ -2,6 +2,9 @@ mat-sidenav-container {
   height: 100%;
   mat-sidenav {
     width: 250px;
+    .nav-label {
+      margin-left: 15px;
+    }
   }
   mat-toolbar {
     a {
