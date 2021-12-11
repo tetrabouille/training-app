@@ -1,4 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { interval, Subscription } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
@@ -10,7 +16,7 @@ import { StopTrainingComponent } from './stop-training/stop-training.component';
   templateUrl: './current-training.component.html',
   styleUrls: ['./current-training.component.scss'],
 })
-export class CurrentTrainingComponent implements OnInit {
+export class CurrentTrainingComponent implements OnInit, OnDestroy {
   @Output() finish = new EventEmitter<boolean>();
 
   public progress = 0;
