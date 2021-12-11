@@ -11,9 +11,10 @@ import { StopTrainingComponent } from './stop-training/stop-training.component';
   styleUrls: ['./current-training.component.scss'],
 })
 export class CurrentTrainingComponent implements OnInit {
-  @Output() finish = new EventEmitter<void>();
+  @Output() finish = new EventEmitter<boolean>();
 
   public progress = 0;
+  public exerciseDone = false;
 
   private timerSub: Subscription;
 
@@ -29,11 +30,11 @@ export class CurrentTrainingComponent implements OnInit {
 
   startTimer(): void {
     if (this.timerSub) return;
-    this.timerSub = interval(500)
+    this.timerSub = interval(100)
       .pipe(takeWhile(() => this.progress < 100))
       .subscribe(() => {
-        console.log('tick');
         this.progress += 5;
+        if (this.progress >= 100) this.exerciseDone = true;
       });
   }
 
@@ -48,8 +49,12 @@ export class CurrentTrainingComponent implements OnInit {
       data: { progress: this.progress },
     });
     stopDialog.afterClosed().subscribe((finish) => {
-      if (finish) return this.finish.emit();
+      if (finish) return this.finish.emit(false);
       else this.startTimer();
     });
+  }
+
+  onBackClick(): void {
+    this.finish.emit(true);
   }
 }

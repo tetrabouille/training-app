@@ -3,14 +3,23 @@
   fxLayout="column"
   fxLayoutAlign="center center"
 >
-  <mat-progress-spinner
-    mode="determinate"
-    [value]="progress"
-  ></mat-progress-spinner>
-  <h1>{{ progress }}</h1>
-  <p>
-    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa doloribus
-    aliquam harum est atque porro! Necessitatibus ullam itaque hic doloremque.
-  </p>
-  <button mat-raised-button color="accent" (click)="onStopClick()">Stop</button>
+  <ng-container *ngIf="!exerciseDone; else success">
+    <mat-progress-spinner
+      mode="determinate"
+      [value]="progress"
+    ></mat-progress-spinner>
+    <h1>{{ progress }}%</h1>
+    <p>Keep on going ! No pain no gain !</p>
+    <button mat-raised-button color="accent" (click)="onStopClick()">
+      Stop
+    </button>
+  </ng-container>
+  <ng-template #success>
+    <mat-icon class="success-icon">task_alt</mat-icon>
+    <h1>Completed</h1>
+    <p>Congratulation !</p>
+    <button mat-raised-button color="primary" (click)="onBackClick()">
+      Return
+    </button>
+  </ng-template>
 </section>
