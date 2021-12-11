@@ -3,7 +3,14 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "paths": {
+      "@models/*": ["app/models/*"],
+      "@components/*": ["app/components/*"],
+      "@pipes/*": ["app/pipes/*"],
+      "@services/*": ["app/services/*"],
+      "@directives/*": ["app/directives/*"],
+    }
   },
   "files": [
     "src/main.ts",
