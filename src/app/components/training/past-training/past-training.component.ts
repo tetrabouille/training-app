@@ -1,8 +1,16 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewChild,
+  OnDestroy,
+} from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
-import { Session } from '@models/session.model';
 import { TrainingService } from '@services/training.service';
 
 @Component({
@@ -10,8 +18,9 @@ import { TrainingService } from '@services/training.service';
   templateUrl: './past-training.component.html',
   styleUrls: ['./past-training.component.scss'],
 })
-export class PastTrainingComponent implements OnInit, AfterViewInit {
+export class PastTrainingComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   public dataSource = new MatTableDataSource<{
     date: Date;
@@ -29,6 +38,10 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
     'progress',
     'state',
   ];
+  public filterValue = '';
+
+  private filterChange = new Subject<string>();
+  private filterSub: Subscription;
 
   constructor(private trainingService: TrainingService) {}
 
@@ -53,9 +66,28 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
           state,
         };
       });
+    this.filterSub = this.filterChange
+      .pipe(debounceTime(250))
+      .subscribe((filterValue) => {
+        this.dataSource.filter = filterValue;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.filterSub.unsubscribe();
   }
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+  }
+
+  public onFilter(event: any): void {
+    this.filterChange.next(event.target.value.trim().toLowerCase());
+  }
+
+  public onCancelFilter(): void {
+    this.filterValue = '';
+    this.dataSource.filter = '';
   }
 }

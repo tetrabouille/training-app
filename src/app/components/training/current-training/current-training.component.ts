@@ -36,7 +36,6 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((session) => {
         if (session) {
-          console.log('session : ', session);
           this.session = session;
           switch (session.state) {
             case 'running':
