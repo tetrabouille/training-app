@@ -31,14 +31,17 @@ export class TrainingService {
       exercise: selectedExercise,
       startDate: new Date(),
       endDate: null,
+      duration: 0,
+      calories: 0,
       progress: 0,
       state: 'running',
     };
     this.sessionChanged();
   }
 
-  pauseSession() {
+  pauseSession(progress = 0) {
     this.runningSession.state = 'paused';
+    this.runningSession.progress = progress;
     this.sessionChanged();
   }
 
@@ -47,13 +50,30 @@ export class TrainingService {
     this.sessionChanged();
   }
 
-  cancelSession() {
+  cancelSession(progress = 0) {
     this.runningSession.state = 'canceled';
-    this.sessionChanged();
+    this.runningSession.endDate = new Date();
+    this.runningSession.progress = progress;
+    this.terminateSession();
   }
 
   completeSession() {
     this.runningSession.state = 'completed';
+    this.runningSession.endDate = new Date();
+    this.runningSession.progress = 100;
+    this.terminateSession();
+  }
+
+  sessionChanged(): void {
+    this.runningSessionChanged.next(this.getRunningSession());
+  }
+
+  terminateSession(): void {
+    const { exercise, progress } = this.runningSession;
+    this.runningSession.duration = exercise.duration * (progress / 100);
+    this.runningSession.calories = exercise.calories * (progress / 100);
+    this.pastSessions.push(cloneDeep(this.runningSession));
+    this.runningSession = null;
     this.sessionChanged();
   }
 
@@ -65,7 +85,7 @@ export class TrainingService {
     return cloneDeep(this.runningSession);
   }
 
-  sessionChanged(): void {
-    this.runningSessionChanged.next(this.getRunningSession());
+  getPastSessions(): Session[] {
+    return cloneDeep(this.pastSessions);
   }
 }

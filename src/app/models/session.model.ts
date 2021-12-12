@@ -5,6 +5,8 @@ export interface Session {
   exercise: Exercise;
   startDate: Date;
   endDate: Date;
+  duration: number;
+  calories: number;
   state: 'running' | 'paused' | 'completed' | 'canceled';
   progress: number;
 }

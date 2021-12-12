@@ -21,7 +21,6 @@ import { ValidationComponent } from '@components/dialog/validation/validation.co
 export class CurrentTrainingComponent implements OnInit, OnDestroy {
   @Output() finish = new EventEmitter<void>();
 
-  public progress = 0;
   public exerciseDone = false;
   public session: Session;
 
@@ -55,18 +54,21 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopTimer();
-    if (this.trainingService.getRunningSession().state === 'running') {
-      this.trainingService.pauseSession();
+    if (this.trainingService.getRunningSession()?.state === 'running') {
+      this.trainingService.pauseSession(this.session.progress);
     }
   }
 
   startTimer(): void {
     if (this.timerSub) return;
-    this.timerSub = interval(this.session.exercise.duration * 10) // (duration / 100) * 1000
-      .pipe(takeWhile(() => this.progress < 100))
+    this.timerSub = interval(this.session.exercise.duration * 1) // (duration / 100) * 1000
+      .pipe(takeWhile(() => this.session.progress < 100))
       .subscribe(() => {
-        this.progress += 1;
-        if (this.progress >= 100) this.exerciseDone = true;
+        this.session.progress += 1;
+        if (this.session.progress >= 100) {
+          this.exerciseDone = true;
+          this.trainingService.completeSession();
+        }
       });
   }
 
@@ -85,12 +87,12 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
       },
     });
     stopDialog.afterClosed().subscribe((answer: boolean) => {
-      if (answer) {
-        this.progress = 0;
+      if (answer || answer == null) {
+        this.session.progress = 0;
         this.startTimer();
         this.trainingService.resumeSession();
       } else {
-        this.trainingService.cancelSession();
+        this.trainingService.cancelSession(this.session.progress);
         this.finish.emit();
       }
     });
@@ -98,11 +100,11 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
 
   onStopClick(): void {
     this.stopTimer();
-    this.trainingService.pauseSession();
+    this.trainingService.pauseSession(this.session.progress);
     const stopDialog = this.dialog.open(ValidationComponent, {
       data: {
         title: "Don't give up !",
-        content: `Are you sure you want to stop ? You did ${this.progress}%`,
+        content: `Are you sure you want to stop ? You did ${this.session.progress}%`,
         positive: 'I can do it !',
         negative: 'Yes please',
       },
@@ -112,7 +114,7 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
         this.startTimer();
         this.trainingService.resumeSession();
       } else {
-        this.trainingService.cancelSession();
+        this.trainingService.cancelSession(this.session.progress);
         this.finish.emit();
       }
     });

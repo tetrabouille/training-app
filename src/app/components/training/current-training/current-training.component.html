@@ -6,9 +6,9 @@
   <ng-container *ngIf="!exerciseDone; else success">
     <mat-progress-spinner
       mode="determinate"
-      [value]="progress"
+      [value]="session.progress"
     ></mat-progress-spinner>
-    <h1>{{ progress }}%</h1>
+    <h1>{{ session.progress }}%</h1>
     <p>Keep on going ! No pain no gain !</p>
     <button mat-raised-button color="accent" (click)="onStopClick()">
       Stop

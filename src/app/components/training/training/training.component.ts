@@ -19,7 +19,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.sessionSub = this.trainingService.runningSessionChanged.subscribe(
       (session) => {
         if (session) this.ongoingTraining = true;
-        else this.ongoingTraining = false;
       }
     );
   }
