@@ -1,15 +1,17 @@
 import {
   Component,
-  EventEmitter,
   OnDestroy,
   OnInit,
   Output,
+  EventEmitter,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { interval, Subscription } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
+import { take, takeWhile } from 'rxjs/operators';
 
-import { StopTrainingComponent } from './stop-training/stop-training.component';
+import { Session } from '@models/session.model';
+import { TrainingService } from '@services/training.service';
+import { ValidationComponent } from '@components/dialog/validation/validation.component';
 
 @Component({
   selector: 'app-current-training',
@@ -17,29 +19,53 @@ import { StopTrainingComponent } from './stop-training/stop-training.component';
   styleUrls: ['./current-training.component.scss'],
 })
 export class CurrentTrainingComponent implements OnInit, OnDestroy {
-  @Output() finish = new EventEmitter<boolean>();
+  @Output() finish = new EventEmitter<void>();
 
   public progress = 0;
   public exerciseDone = false;
+  public session: Session;
 
   private timerSub: Subscription;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private trainingService: TrainingService
+  ) {}
 
   ngOnInit(): void {
-    this.startTimer();
+    this.trainingService.runningSessionChanged
+      .pipe(take(1))
+      .subscribe((session) => {
+        if (session) {
+          console.log('session : ', session);
+          this.session = session;
+          switch (session.state) {
+            case 'running':
+              this.startTimer();
+              break;
+            case 'paused':
+              this.resumeSessionDialog();
+              break;
+            default:
+              break;
+          }
+        }
+      });
   }
 
   ngOnDestroy(): void {
     this.stopTimer();
+    if (this.trainingService.getRunningSession().state === 'running') {
+      this.trainingService.pauseSession();
+    }
   }
 
   startTimer(): void {
     if (this.timerSub) return;
-    this.timerSub = interval(100)
+    this.timerSub = interval(this.session.exercise.duration * 10) // (duration / 100) * 1000
       .pipe(takeWhile(() => this.progress < 100))
       .subscribe(() => {
-        this.progress += 5;
+        this.progress += 1;
         if (this.progress >= 100) this.exerciseDone = true;
       });
   }
@@ -49,18 +75,50 @@ export class CurrentTrainingComponent implements OnInit, OnDestroy {
     this.timerSub = null;
   }
 
+  resumeSessionDialog(): void {
+    const stopDialog = this.dialog.open(ValidationComponent, {
+      data: {
+        title: 'This exercise was left unfinished',
+        content: 'Do you want to restart it ?',
+        positive: "Let's go !",
+        negative: 'Cancel it',
+      },
+    });
+    stopDialog.afterClosed().subscribe((answer: boolean) => {
+      if (answer) {
+        this.progress = 0;
+        this.startTimer();
+        this.trainingService.resumeSession();
+      } else {
+        this.trainingService.cancelSession();
+        this.finish.emit();
+      }
+    });
+  }
+
   onStopClick(): void {
     this.stopTimer();
-    const stopDialog = this.dialog.open(StopTrainingComponent, {
-      data: { progress: this.progress },
+    this.trainingService.pauseSession();
+    const stopDialog = this.dialog.open(ValidationComponent, {
+      data: {
+        title: "Don't give up !",
+        content: `Are you sure you want to stop ? You did ${this.progress}%`,
+        positive: 'I can do it !',
+        negative: 'Yes please',
+      },
     });
-    stopDialog.afterClosed().subscribe((finish) => {
-      if (finish) return this.finish.emit(false);
-      else this.startTimer();
+    stopDialog.afterClosed().subscribe((answer) => {
+      if (answer || answer == null) {
+        this.startTimer();
+        this.trainingService.resumeSession();
+      } else {
+        this.trainingService.cancelSession();
+        this.finish.emit();
+      }
     });
   }
 
   onBackClick(): void {
-    this.finish.emit(true);
+    this.finish.emit();
   }
 }

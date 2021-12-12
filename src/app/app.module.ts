@@ -16,7 +16,7 @@ import { PastTrainingComponent } from './components/training/past-training/past-
 import { WelcomeComponent } from './components/welcome/welcome.component';
 import { HeaderComponent } from './components/navigation/header/header.component';
 import { SidenavListComponent } from './components/navigation/sidenav-list/sidenav-list.component';
-import { StopTrainingComponent } from './components/training/current-training/stop-training/stop-training.component';
+import { ValidationComponent } from './components/dialog/validation/validation.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +30,7 @@ import { StopTrainingComponent } from './components/training/current-training/st
     WelcomeComponent,
     HeaderComponent,
     SidenavListComponent,
-    StopTrainingComponent,
+    ValidationComponent,
   ],
   imports: [
     BrowserModule,

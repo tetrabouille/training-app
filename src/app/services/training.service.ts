@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { cloneDeep } from 'lodash';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { Exercise } from '@models/exercise.model';
 import { Session } from '@models/session.model';
@@ -9,7 +9,7 @@ import { Session } from '@models/session.model';
   providedIn: 'root',
 })
 export class TrainingService {
-  public runningSessionChanged = new Subject<Session>();
+  public runningSessionChanged = new BehaviorSubject<Session>(null);
 
   private exercises: Exercise[] = [
     { id: 'crunch', name: 'Crunches', duration: 30, calories: 8 },
@@ -19,6 +19,7 @@ export class TrainingService {
   ];
 
   private runningSession: Session;
+  private pastSessions: Session[] = [];
 
   constructor() {}
 
@@ -28,11 +29,32 @@ export class TrainingService {
     this.runningSession = {
       id: `${Math.round(Math.random() * 10000).toString()}-${exerciseId}`,
       exercise: selectedExercise,
-      date: new Date(),
+      startDate: new Date(),
+      endDate: null,
       progress: 0,
-      state: null,
+      state: 'running',
     };
-    this.runningSessionChanged.next(this.getRunningSession());
+    this.sessionChanged();
+  }
+
+  pauseSession() {
+    this.runningSession.state = 'paused';
+    this.sessionChanged();
+  }
+
+  resumeSession() {
+    this.runningSession.state = 'running';
+    this.sessionChanged();
+  }
+
+  cancelSession() {
+    this.runningSession.state = 'canceled';
+    this.sessionChanged();
+  }
+
+  completeSession() {
+    this.runningSession.state = 'completed';
+    this.sessionChanged();
   }
 
   getExercises(): Exercise[] {
@@ -41,5 +63,9 @@ export class TrainingService {
 
   getRunningSession(): Session {
     return cloneDeep(this.runningSession);
+  }
+
+  sessionChanged(): void {
+    this.runningSessionChanged.next(this.getRunningSession());
   }
 }

@@ -3,7 +3,8 @@ import { Exercise } from './exercise.model';
 export interface Session {
   id: string;
   exercise: Exercise;
-  date: Date;
-  state: 'completed' | 'canceled' | null;
+  startDate: Date;
+  endDate: Date;
+  state: 'running' | 'paused' | 'completed' | 'canceled';
   progress: number;
 }

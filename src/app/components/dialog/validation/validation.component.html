@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<mat-dialog-content>{{ content }}</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button color="primary" [mat-dialog-close]="true">
+    {{ positive }}
+  </button>
+  <button mat-button color="accent" [mat-dialog-close]="false">
+    {{ negative }}
+  </button>
+</mat-dialog-actions>

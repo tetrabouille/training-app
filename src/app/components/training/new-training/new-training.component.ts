@@ -10,8 +10,6 @@ import { Exercise } from '@models/exercise.model';
   styleUrls: ['./new-training.component.scss'],
 })
 export class NewTrainingComponent implements OnInit {
-  @Output() startClick = new EventEmitter<void>();
-
   public exercises: Exercise[];
 
   constructor(private trainingService: TrainingService) {}
