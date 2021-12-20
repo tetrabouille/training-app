@@ -1,7 +1,8 @@
 import { Exercise } from './exercise.model';
 
 export interface Session {
-  id: string;
+  id?: string;
+  exerciseId?: string;
   exercise: Exercise;
   startDate: Date;
   endDate: Date;

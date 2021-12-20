@@ -42,30 +42,35 @@ export class PastTrainingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private filterChange = new Subject<string>();
   private filterSub: Subscription;
+  private pastSessionsSub: Subscription;
 
   constructor(private trainingService: TrainingService) {}
 
   ngOnInit(): void {
-    this.dataSource.data = this.trainingService
-      .getPastSessions()
-      .map((session) => {
-        const {
-          startDate: date,
-          exercise: { name },
-          duration,
-          calories,
-          progress,
-          state,
-        } = session;
-        return {
-          date,
-          name,
-          duration,
-          calories,
-          progress,
-          state,
-        };
-      });
+    this.pastSessionsSub = this.trainingService.pastSessionsChanged.subscribe(
+      (sessions) => {
+        this.dataSource.data = sessions.map((session) => {
+          const {
+            startDate: date,
+            exercise: { name },
+            duration,
+            calories,
+            progress,
+            state,
+          } = session;
+          return {
+            date,
+            name,
+            duration,
+            calories,
+            progress,
+            state,
+          };
+        });
+      }
+    );
+    this.trainingService.fetchPastSessions();
+
     this.filterSub = this.filterChange
       .pipe(debounceTime(250))
       .subscribe((filterValue) => {
@@ -75,6 +80,7 @@ export class PastTrainingComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
     this.filterSub.unsubscribe();
+    this.pastSessionsSub.unsubscribe();
   }
 
   ngAfterViewInit(): void {

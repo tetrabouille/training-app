@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "lesson-training-app": {
+      "hosting": {
+        "training-app": [
+          "lesson-training-app"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "lesson-training-app"
+  }
+}

@@ -105,6 +105,16 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "training-app:build:production",
+            "firebaseProject": "lesson-training-app",
+            "firebaseHostingSite": "lesson-training-app"
+          }
         }
       }
     }

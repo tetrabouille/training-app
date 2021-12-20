@@ -22,7 +22,7 @@ export class SignupComponent implements OnInit {
     const newUser = {};
     if (!form.valid) return;
     this.authService.registerUser({
-      email: form.value.password,
+      email: form.value.email,
       password: form.value.password,
     });
   }
