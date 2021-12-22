@@ -7,6 +7,7 @@ import { map, takeWhile } from 'rxjs/operators';
 
 import { Exercise } from '@models/exercise.model';
 import { Session } from '@models/session.model';
+import { UiService } from './ui.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,10 @@ export class TrainingService {
   private exercisesSub: Subscription;
   private pastSessionsSub: Subscription;
 
-  constructor(private database: AngularFirestore) {}
+  constructor(
+    private database: AngularFirestore,
+    private uiService: UiService
+  ) {}
 
   startSession(exerciseId: string) {
     this.waitForExercises().then((exercises) => {
@@ -69,6 +73,7 @@ export class TrainingService {
 
   fetchExercises(): void {
     if (this.exercisesSub) return;
+    this.uiService.loadingStateChanged.next(true);
     this.exercisesSub = this.database
       .collection<Exercise>('exercises')
       .snapshotChanges()
@@ -86,14 +91,14 @@ export class TrainingService {
         })
       )
       .subscribe((exercises) => {
-        console.log('fetch exercises : ', exercises);
-
+        this.uiService.loadingStateChanged.next(false);
         this.exercises = exercises;
         this.exercisesChanged.next(cloneDeep(exercises));
       });
   }
 
   fetchPastSessions(): void {
+    this.uiService.loadingStateChanged.next(true);
     this.waitForExercises().then((exercises: Exercise[]) => {
       if (this.pastSessionsSub) return;
       this.pastSessionsSub = this.database
@@ -125,8 +130,7 @@ export class TrainingService {
           })
         )
         .subscribe((sessions) => {
-          console.log('fetch past sessions : ', sessions);
-
+          this.uiService.loadingStateChanged.next(false);
           this.pastSessions = sessions;
           this.pastSessionsChanged.next(cloneDeep(sessions));
         });

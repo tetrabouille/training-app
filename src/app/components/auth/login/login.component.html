@@ -33,7 +33,7 @@
       type="submit"
       mat-raised-button
       color="primary"
-      [disabled]="!!loginForm.invalid || loading"
+      [disabled]="loading || loginForm.invalid"
     >
       <span [ngClass]="loading ? 'hidden' : ''">Submit</span>
       <mat-progress-spinner

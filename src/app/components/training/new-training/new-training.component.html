@@ -10,6 +10,7 @@
             name="exercise"
             #exerciseSelect="ngModel"
             required
+            [disabled]="loading"
           >
             <mat-option
               *ngFor="let exercise of exercises"
@@ -22,6 +23,11 @@
             Select an exercise
           </mat-error>
         </mat-form-field>
+        <mat-progress-spinner
+          *ngIf="loading"
+          mode="indeterminate"
+          diameter="25"
+        ></mat-progress-spinner>
       </mat-card-content>
       <mat-card-actions fxLayoutAlign="end">
         <button
@@ -29,7 +35,7 @@
           fxFlex="100px"
           mat-raised-button
           color="primary"
-          [disabled]="f.invalid"
+          [disabled]="loading || f.invalid"
         >
           Start !
         </button>
