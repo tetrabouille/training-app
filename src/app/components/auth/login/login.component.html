@@ -29,12 +29,19 @@
       <mat-error> The password is required </mat-error>
     </mat-form-field>
     <button
+      class="submit-button"
       type="submit"
       mat-raised-button
       color="primary"
-      [disabled]="!!loginForm.invalid"
+      [disabled]="!!loginForm.invalid || loading"
     >
-      Submit
+      <span [ngClass]="loading ? 'hidden' : ''">Submit</span>
+      <mat-progress-spinner
+        *ngIf="loading"
+        mode="indeterminate"
+        diameter="25"
+        color="secondary"
+      ></mat-progress-spinner>
     </button>
   </form>
 </section>
