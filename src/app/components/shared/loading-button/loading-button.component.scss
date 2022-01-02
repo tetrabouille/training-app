@@ -1,0 +1,12 @@
+.submit-button {
+  position: relative;
+  mat-progress-spinner {
+    position: absolute;
+    left: calc(50% - 12.5px);
+    top: 6px;
+  }
+}
+
+.hidden {
+  visibility: hidden;
+}

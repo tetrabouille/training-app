@@ -22,6 +22,7 @@ import { HeaderComponent } from './components/navigation/header/header.component
 import { SidenavListComponent } from './components/navigation/sidenav-list/sidenav-list.component';
 import { ValidationComponent } from './components/dialog/validation/validation.component';
 import { AppComponent } from './components/app.component';
+import { LoadingButtonComponent } from '@components/shared/loading-button/loading-button.component';
 
 import { environment } from 'environments/environment';
 
@@ -38,6 +39,7 @@ import { environment } from 'environments/environment';
     HeaderComponent,
     SidenavListComponent,
     ValidationComponent,
+    LoadingButtonComponent,
   ],
   imports: [
     BrowserModule,

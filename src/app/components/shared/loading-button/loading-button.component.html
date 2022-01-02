@@ -1,0 +1,14 @@
+<button
+  class="submit-button"
+  [type]="type"
+  mat-raised-button
+  [color]="color"
+  [disabled]="loading || disabled"
+>
+  <span [ngClass]="loading ? 'hidden' : ''">{{ text }}</span>
+  <mat-progress-spinner
+    *ngIf="loading"
+    mode="indeterminate"
+    diameter="25"
+  ></mat-progress-spinner>
+</button>

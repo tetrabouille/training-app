@@ -64,13 +64,12 @@
     <mat-checkbox ngModel name="agree" required color="primary">
       Accept terms of agreement pleaase
     </mat-checkbox>
-    <button
+    <app-loading-button
+      text="Submit"
       type="submit"
-      mat-raised-button
       color="primary"
-      [disabled]="!!f.invalid"
-    >
-      Submit
-    </button>
+      [disabled]="f.invalid"
+      [loading]="loading"
+    ></app-loading-button>
   </form>
 </section>
