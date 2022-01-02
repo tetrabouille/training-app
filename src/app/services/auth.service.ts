@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Subject } from 'rxjs';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { AuthData } from '@models/auth-data.model';
 import { TrainingService } from '@services/training.service';
@@ -20,7 +19,6 @@ export class AuthService {
     private router: Router,
     private fireAuth: AngularFireAuth,
     private trainingService: TrainingService,
-    private snackbar: MatSnackBar,
     private uiService: UiService
   ) {}
 
@@ -43,15 +41,13 @@ export class AuthService {
     this.uiService.loadingStateChanged.next(true);
     this.fireAuth
       .createUserWithEmailAndPassword(authData.email, authData.password)
-      .then((value) => {
+      .then(() => {
         this.uiService.loadingStateChanged.next(false);
-        this.snackbar.open('User created', null, { duration: 3000 });
+        this.uiService.displayMessage('User created');
       })
-      .catch((error) => {
+      .catch(() => {
         this.uiService.loadingStateChanged.next(false);
-        this.snackbar.open('Failed to create account', null, {
-          duration: 3000,
-        });
+        this.uiService.displayMessage('Failed to create account');
       });
   }
 
@@ -59,14 +55,13 @@ export class AuthService {
     this.uiService.loadingStateChanged.next(true);
     this.fireAuth
       .signInWithEmailAndPassword(authData.email, authData.password)
-      .then((value) => {
+      .then(() => {
         this.uiService.loadingStateChanged.next(false);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
         this.uiService.loadingStateChanged.next(false);
         this.authChange.next(false);
-        this.snackbar.open('Failed to log in', null, { duration: 3000 });
+        this.uiService.displayMessage('Failed to log in');
       });
   }
 
