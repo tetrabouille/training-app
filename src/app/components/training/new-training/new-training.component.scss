@@ -6,5 +6,10 @@ mat-card-content {
   position: relative;
   mat-progress-spinner {
     position: absolute;
+    top: 15px;
   }
+}
+
+.hidden {
+  visibility: hidden;
 }

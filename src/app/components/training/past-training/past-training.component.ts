@@ -12,6 +12,7 @@ import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { TrainingService } from '@services/training.service';
+import { UiService } from '@services/ui.service';
 
 @Component({
   selector: 'app-past-training',
@@ -39,12 +40,17 @@ export class PastTrainingComponent implements OnInit, OnDestroy, AfterViewInit {
     'state',
   ];
   public filterValue = '';
+  public loading = false;
 
   private filterChange = new Subject<string>();
   private filterSub: Subscription;
   private pastSessionsSub: Subscription;
+  private loadingSub: Subscription;
 
-  constructor(private trainingService: TrainingService) {}
+  constructor(
+    private trainingService: TrainingService,
+    private uiService: UiService
+  ) {}
 
   ngOnInit(): void {
     this.pastSessionsSub = this.trainingService.pastSessionsChanged.subscribe(
@@ -76,11 +82,18 @@ export class PastTrainingComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((filterValue) => {
         this.dataSource.filter = filterValue;
       });
+
+    this.loadingSub = this.uiService.loadingStateChanged.subscribe(
+      (loading) => {
+        this.loading = loading;
+      }
+    );
   }
 
   ngOnDestroy(): void {
     this.filterSub.unsubscribe();
     this.pastSessionsSub.unsubscribe();
+    this.loadingSub.unsubscribe();
   }
 
   ngAfterViewInit(): void {

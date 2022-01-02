@@ -3,14 +3,13 @@
     <mat-card fxFlex="min(400px, 100%)">
       <mat-card-title fxLayoutAlign="center">My workout</mat-card-title>
       <mat-card-content fxLayoutAlign="center">
-        <mat-form-field fxFlex="80%">
+        <mat-form-field fxFlex="80%" [ngClass]="loading ? 'hidden' : ''">
           <mat-select
             placeholder="Select your exercise"
             ngModel
             name="exercise"
             #exerciseSelect="ngModel"
             required
-            [disabled]="loading"
           >
             <mat-option
               *ngFor="let exercise of exercises"

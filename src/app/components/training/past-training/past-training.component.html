@@ -1,5 +1,5 @@
 <section>
-  <ng-container *ngIf="dataSource.data.length; else noData">
+  <div [hidden]="loading || !dataSource.data.length">
     <div fxLayout fxLayoutAlign="start center">
       <mat-form-field>
         <input
@@ -64,12 +64,18 @@
       >
       </mat-paginator>
     </div>
-  </ng-container>
-  <ng-template #noData>
-    <mat-card class="nodata-card" fxLayout fxLayoutAlign="center center">
-      <mat-card-content>
-        <h3>You don't have any trainings yet</h3>
-      </mat-card-content>
-    </mat-card>
-  </ng-template>
+  </div>
+  <div
+    *ngIf="loading || !dataSource.data.length"
+    class="mat-elevation-z8 placeholder"
+  >
+    <mat-progress-spinner
+      *ngIf="loading; else noData"
+      mode="indeterminate"
+      diameter="25"
+    ></mat-progress-spinner>
+    <ng-template #noData>
+      <h3>You don't have any trainings yet</h3>
+    </ng-template>
+  </div>
 </section>
