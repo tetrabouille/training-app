@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 
 import { MaterialModule } from 'app/material.module';
 
-import { ValidationComponent } from './validation.component';
+import { LoadingButtonComponent } from './loading-button/loading-button.component';
 
 @NgModule({
-  declarations: [ValidationComponent],
+  declarations: [LoadingButtonComponent],
   imports: [CommonModule, MaterialModule],
-  exports: [],
+  exports: [LoadingButtonComponent],
 })
-export class DialogModule {}
+export class SharedComponentsModule {}

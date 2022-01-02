@@ -2,11 +2,11 @@ import { NgModule } from '@angular/core';
 
 import { SharedModule } from 'app/shared.module';
 
-import { WelcomeComponent } from './welcome/welcome.component';
+import { ValidationComponent } from './validation/validation.component';
 
 @NgModule({
-  declarations: [WelcomeComponent],
+  declarations: [ValidationComponent],
   imports: [SharedModule],
   exports: [],
 })
-export class WelcomeModule {}
+export class DialogModule {}
