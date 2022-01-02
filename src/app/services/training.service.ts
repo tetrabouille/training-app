@@ -3,7 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Timestamp } from '@angular/fire/firestore';
 import { cloneDeep } from 'lodash';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { map, takeWhile } from 'rxjs/operators';
+import { map, take, takeWhile } from 'rxjs/operators';
 
 import { Exercise } from '@models/exercise.model';
 import { Session } from '@models/session.model';
@@ -71,8 +71,13 @@ export class TrainingService {
     this.terminateSession();
   }
 
-  fetchExercises(): void {
-    if (this.exercisesSub) return;
+  fetchExercises(refresh = false): void {
+    if (refresh) {
+      delete this.exercisesSub;
+      delete this.exercises;
+    } else if (this.exercisesSub || this.exercises) return;
+    // console.log('fetch exercises');
+
     this.uiService.loadingStateChanged.next(true);
     this.exercisesSub = this.database
       .collection<Exercise>('exercises')
@@ -90,17 +95,35 @@ export class TrainingService {
           });
         })
       )
-      .subscribe((exercises) => {
-        this.uiService.loadingStateChanged.next(false);
-        this.exercises = exercises;
-        this.exercisesChanged.next(cloneDeep(exercises));
-      });
+      .subscribe(
+        (exercises) => {
+          // console.log('exercises fetched');
+
+          this.uiService.loadingStateChanged.next(false);
+          this.exercises = exercises;
+          this.exercisesChanged.next(cloneDeep(exercises));
+        },
+        () => {
+          // console.log('failed to fetch exercises');
+
+          this.uiService.loadingStateChanged.next(false);
+          this.uiService.displayMessage('Fetching exercises failed');
+          delete this.exercises;
+          this.exercisesChanged.next([]);
+        }
+      );
   }
 
-  fetchPastSessions(): void {
-    this.uiService.loadingStateChanged.next(true);
+  fetchPastSessions(refresh = false): void {
+    if (refresh) {
+      delete this.pastSessionsSub;
+      delete this.pastSessions;
+    } else if (this.pastSessions || this.pastSessionsSub) return;
+    // console.log('fetch past sessions');
+
     this.waitForExercises().then((exercises: Exercise[]) => {
-      if (this.pastSessionsSub) return;
+      if (!exercises?.length) return;
+      this.uiService.loadingStateChanged.next(true);
       this.pastSessionsSub = this.database
         .collection<Session>('sessions')
         .snapshotChanges()
@@ -118,7 +141,7 @@ export class TrainingService {
               } = doc.payload.doc.data();
               return {
                 id: doc.payload.doc.id,
-                exercise: exercises.find((e) => e.id === exerciseId),
+                exercise: this.exercises.find((e) => e.id === exerciseId),
                 startDate: (startDate as any as Timestamp).toDate(),
                 endDate: (endDate as any as Timestamp).toDate(),
                 calories,
@@ -129,21 +152,41 @@ export class TrainingService {
             });
           })
         )
-        .subscribe((sessions) => {
-          this.uiService.loadingStateChanged.next(false);
-          this.pastSessions = sessions;
-          this.pastSessionsChanged.next(cloneDeep(sessions));
-        });
+        .subscribe(
+          (sessions) => {
+            // console.log('past sessions fetched');
+
+            this.uiService.loadingStateChanged.next(false);
+            this.pastSessions = sessions;
+            this.pastSessionsChanged.next(cloneDeep(sessions));
+          },
+          () => {
+            // console.log('failed to fetch past sessions');
+
+            this.uiService.loadingStateChanged.next(false);
+            this.uiService.displayMessage('Fetching past sessions failed');
+            delete this.pastSessions;
+            this.pastSessionsChanged.next([]);
+          }
+        );
     });
   }
 
+  removeFetchedData(): void {
+    this.exercisesChanged.next([]);
+    this.pastSessionsChanged.next([]);
+  }
+
   cancelFireSubscription(): void {
-    const subs = ['exercisesSub', 'pastSessionsSub'];
-    subs.forEach((sub) => {
-      if (!this[sub]) return;
+    const subs = ['exercises', 'pastSessions'];
+    subs.forEach((key) => {
+      const sub = `${key}Sub`;
+      if (!this[sub] || !this[key]) return;
       this[sub].unsubscribe();
       delete this[sub];
+      delete this[key];
     });
+    this.removeFetchedData();
   }
 
   private terminateSession(): void {
@@ -162,24 +205,29 @@ export class TrainingService {
   }
 
   private waitForExercises(): Promise<Exercise[]> {
-    return new Promise((resolve, reject) => {
-      let needFetch = false;
+    return new Promise((resolve) => {
+      let fetched = false;
       let stop = false;
       this.exercisesChanged
         .pipe(takeWhile(() => !stop))
         .subscribe((exercises) => {
-          if (exercises.length === 0) {
-            if (needFetch) {
-              stop = true;
-              reject('no exercises');
-            }
-            needFetch = true;
-            return;
-          }
-          stop = true;
-          resolve(exercises);
+          this.uiService.loadingStateChanged
+            .pipe(take(1))
+            .subscribe((isLoading) => {
+              if (isLoading) return;
+              if (exercises.length === 0) {
+                if (fetched) {
+                  stop = true;
+                  return resolve([]);
+                }
+                this.fetchExercises(true);
+                fetched = true;
+              } else {
+                stop = true;
+                resolve(exercises);
+              }
+            });
         });
-      if (needFetch) this.fetchExercises();
     });
   }
 

@@ -75,7 +75,12 @@
       diameter="25"
     ></mat-progress-spinner>
     <ng-template #noData>
-      <h3>You don't have any trainings yet</h3>
+      <div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="15px">
+        <h3>You don't have any trainings yet</h3>
+        <button mat-mini-fab (click)="onRefresh()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
     </ng-template>
   </div>
 </section>

@@ -109,4 +109,8 @@ export class PastTrainingComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filterValue = '';
     this.dataSource.filter = '';
   }
+
+  public onRefresh(): void {
+    this.trainingService.fetchPastSessions(true);
+  }
 }

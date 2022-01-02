@@ -3,7 +3,10 @@
     <mat-card fxFlex="min(400px, 100%)">
       <mat-card-title fxLayoutAlign="center">My workout</mat-card-title>
       <mat-card-content fxLayoutAlign="center">
-        <mat-form-field fxFlex="80%" [ngClass]="loading ? 'hidden' : ''">
+        <mat-form-field
+          fxFlex="80%"
+          [ngClass]="loading || !exercises?.length ? 'hidden' : ''"
+        >
           <mat-select
             placeholder="Select your exercise"
             ngModel
@@ -27,6 +30,13 @@
           mode="indeterminate"
           diameter="25"
         ></mat-progress-spinner>
+        <button
+          *ngIf="!loading && !exercises?.length"
+          mat-mini-fab
+          (click)="onRefresh()"
+        >
+          <mat-icon>refresh</mat-icon>
+        </button>
       </mat-card-content>
       <mat-card-actions fxLayoutAlign="end">
         <button

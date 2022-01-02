@@ -45,4 +45,8 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
   onSubmit(form: NgForm): void {
     if (form.valid) this.trainingService.startSession(form.value.exercise);
   }
+
+  onRefresh(): void {
+    this.trainingService.fetchExercises(true);
+  }
 }
